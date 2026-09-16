@@ -97,7 +97,7 @@ function AnimatedSectionTitle({ title, mobileLines }: { title: string; mobileLin
       glitchMode
       glitchInterval={3400}
       glitchDuration={140}
-      letterSpacing={-7}
+      letterSpacing="0.06em"
     >
       {line}
     </FuzzyText>

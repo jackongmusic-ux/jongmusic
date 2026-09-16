@@ -469,7 +469,7 @@ img, video { display: block; max-width: 100%; }
   letter-spacing: -.075em;
 }
 .section-title--fuzzy { min-width: 0; line-height: 0; letter-spacing: 0; }
-.section-title-render { display: flex; max-width: calc(100% + 38px); margin-left: -38px; overflow: visible; }
+.section-title-render { display: flex; width: calc(100% + 76px); max-width: none; margin-left: -38px; overflow: visible; }
 .section-title-render--mobile { display: none; }
 .section-title-fuzzy { display: block; width: auto; max-width: 100%; height: auto; flex: 0 1 auto; }
 .section-eyebrow { font-size: .72rem !important; letter-spacing: .16em !important; text-transform: uppercase; }

@@ -20,7 +20,7 @@ type FuzzyTextProps = {
   glitchInterval?: number;
   glitchDuration?: number;
   gradient?: string[] | null;
-  letterSpacing?: number;
+  letterSpacing?: number | string;
   className?: string;
 };
 
@@ -78,6 +78,20 @@ export default function FuzzyText({
       measuringNode.remove();
       const fontString = `${fontWeight} ${numericFontSize}px ${computedFontFamily}`;
       const text = React.Children.toArray(children).join("");
+      const resolveLetterSpacing = () => {
+        if (typeof letterSpacing === "number") return letterSpacing;
+        const normalizedSpacing = letterSpacing.trim().toLowerCase();
+        const numericSpacing = Number.parseFloat(normalizedSpacing);
+        if (!Number.isFinite(numericSpacing)) return 0;
+        if (normalizedSpacing.endsWith("rem")) {
+          const rootFontSize = Number.parseFloat(window.getComputedStyle(document.documentElement).fontSize) || 16;
+          return numericSpacing * rootFontSize;
+        }
+        if (normalizedSpacing.endsWith("em")) return numericSpacing * numericFontSize;
+        if (normalizedSpacing.endsWith("%")) return numericSpacing * numericFontSize / 100;
+        return numericSpacing;
+      };
+      const resolvedLetterSpacing = resolveLetterSpacing();
 
       if (document.fonts) {
         try {
@@ -96,19 +110,19 @@ export default function FuzzyText({
       offscreenContext.textBaseline = "alphabetic";
 
       let totalWidth = 0;
-      if (letterSpacing !== 0) {
-        for (const character of text) totalWidth += offscreenContext.measureText(character).width + letterSpacing;
-        totalWidth -= letterSpacing;
+      if (resolvedLetterSpacing !== 0) {
+        for (const character of text) totalWidth += offscreenContext.measureText(character).width + resolvedLetterSpacing;
+        totalWidth -= resolvedLetterSpacing;
       } else {
         totalWidth = offscreenContext.measureText(text).width;
       }
 
       const metrics = offscreenContext.measureText(text);
       const actualLeft = metrics.actualBoundingBoxLeft || 0;
-      const actualRight = letterSpacing !== 0 ? totalWidth : metrics.actualBoundingBoxRight || metrics.width;
+      const actualRight = resolvedLetterSpacing !== 0 ? totalWidth : metrics.actualBoundingBoxRight || metrics.width;
       const actualAscent = metrics.actualBoundingBoxAscent || numericFontSize;
       const actualDescent = metrics.actualBoundingBoxDescent || numericFontSize * 0.2;
-      const textWidth = Math.ceil(letterSpacing !== 0 ? totalWidth : actualLeft + actualRight);
+      const textWidth = Math.ceil(resolvedLetterSpacing !== 0 ? totalWidth : actualLeft + actualRight);
       const textHeight = Math.ceil(actualAscent + actualDescent);
       const buffer = 10;
       const offscreenWidth = textWidth + buffer;
@@ -126,11 +140,11 @@ export default function FuzzyText({
       }
 
       const xOffset = buffer / 2;
-      if (letterSpacing !== 0) {
+      if (resolvedLetterSpacing !== 0) {
         let x = xOffset;
         for (const character of text) {
           offscreenContext.fillText(character, x, actualAscent);
-          x += offscreenContext.measureText(character).width + letterSpacing;
+          x += offscreenContext.measureText(character).width + resolvedLetterSpacing;
         }
       } else {
         offscreenContext.fillText(text, xOffset - actualLeft, actualAscent);
