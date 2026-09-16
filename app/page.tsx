@@ -361,7 +361,7 @@ export default function Home() {
             <div className="about-copy" data-reveal>
               <p className="section-eyebrow">MORE THAN ONE EXPRESSION</p>
               <h3>从音乐开始<br />不止于音乐</h3>
-              <p className="about-lead">我是翁梓铭 JONG，<br />载体会变 情绪不会</p>
+              <p className="about-lead">我是翁梓铭 JONG<br />载体会变 情绪不会</p>
               <p>毕业于星海音乐学院，从词曲创作、编曲到管弦乐配器，以唯美、细腻、大气的声音语言，连接作品与听众。擅长风格多元化，流行、电子、爵士、Hiphop、R&amp;B、纯音乐......</p>
               <p>曾合作李宇春、古巨基、EXO、尚雯婕、杨宗纬、陶喆、鹿晗、黄龄等艺人；参与《乘风破浪的姐姐》《中国好歌曲》《中国好声音》《我是歌手》等音乐节目的音乐制作。</p>
 
@@ -482,7 +482,7 @@ export default function Home() {
           <AnimatedSectionTitle title="GET IN TOUCH" />
           <p className="contact-kicker" data-reveal>HAVE SOMETHING IN MIND?</p>
           <div className="contact-statement" data-reveal>
-            <h3>你有想法，<br />我来帮你实现。</h3>
+            <h3>你有想<span className="contact-glyph-align">法</span><br />我来帮你实<span className="contact-glyph-align">现</span></h3>
           </div>
           <div className="contact-bottom" data-reveal>
             <p>音乐制作人 / 唱作人 / AIMV 导演 / 虚拟艺人制作人</p>
