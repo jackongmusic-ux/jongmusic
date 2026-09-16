@@ -4,9 +4,6 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "JONG 翁梓铭 — Music Producer / Singer-Songwriter / AIMV Director",
   description: "翁梓铭 JONG 的个人作品集：音乐制作、唱作、演唱与 AIMV 视觉导演作品。",
-  other: {
-    "codex-preview": "development",
-  },
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

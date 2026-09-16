@@ -1,0 +1,258 @@
+name: Build or deploy to Alibaba Cloud
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 只构建检查，或立即部署到阿里云
+        type: choice
+        required: true
+        default: build-only
+        options:
+          - build-only
+          - deploy
+      confirm_bucket:
+        description: 选择 deploy 时请输入目标 OSS Bucket 的完整名称
+        type: string
+        required: false
+        default: ""
+      delete_stale_files:
+        description: 同时删除 OSS 中当前版本不存在的旧文件（仅专用且已开启版本控制的 Bucket）
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aliyun-production-jongmusic
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build and verify static site
+    if: ${{ github.event_name == 'workflow_dispatch' || vars.ALIYUN_DEPLOY_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.19.0
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check source
+        run: pnpm lint
+
+      - name: Build static export
+        run: pnpm build
+
+      - name: Verify deployable output
+        run: pnpm run verify:static
+
+      - name: Save verified website artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aliyun-static-${{ github.run_id }}
+          path: dist/client
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 3
+
+  deploy:
+    name: Deploy verified site
+    needs: build
+    if: >-
+      ${{
+        needs.build.result == 'success' &&
+        (
+          (github.event_name == 'push' && vars.ALIYUN_DEPLOY_ENABLED == 'true') ||
+          (
+            github.event_name == 'workflow_dispatch' &&
+            inputs.action == 'deploy'
+          )
+        )
+      }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: aliyun-production
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download verified website artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: aliyun-static-${{ github.run_id }}
+          path: dist/client
+
+      - name: Configure short-lived Alibaba Cloud credentials
+        id: aliyun-credentials
+        if: ${{ vars.ALIYUN_OIDC_PROVIDER_ARN != '' && vars.ALIYUN_ROLE_ARN != '' }}
+        uses: aliyun/configure-aliyun-credentials-action@1e5248c8d5d93a8781ac344a68e19a43341e79e6 # v1
+        with:
+          oidc-provider-arn: ${{ vars.ALIYUN_OIDC_PROVIDER_ARN }}
+          role-to-assume: ${{ vars.ALIYUN_ROLE_ARN }}
+          audience: ${{ vars.ALIYUN_OIDC_AUDIENCE || 'sts.aliyuncs.com' }}
+          role-session-name: jongmusic-github-actions
+
+      - name: Install verified ossutil 2.4.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="ossutil-2.4.0-linux-amd64.zip"
+          download="$RUNNER_TEMP/$archive"
+          curl --fail --location --retry 3 --output "$download" \
+            "https://gosspublic.alicdn.com/ossutil/v2/2.4.0/$archive"
+          echo "85edf66b2fb7238f5c7e25cab820cf29312319fe4935b7c86a6b8485eb434f3c  $download" | sha256sum --check
+          unzip -q "$download" -d "$RUNNER_TEMP/ossutil"
+          mkdir -p "$RUNNER_TEMP/bin"
+          install -m 0755 \
+            "$RUNNER_TEMP/ossutil/ossutil-2.4.0-linux-amd64/ossutil" \
+            "$RUNNER_TEMP/bin/ossutil"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+
+      - name: Validate target and synchronize website
+        shell: bash
+        env:
+          OSS_ACCESS_KEY_ID: ${{ steps.aliyun-credentials.outputs.aliyun-access-key-id || secrets.ALIYUN_ACCESS_KEY_ID }}
+          OSS_ACCESS_KEY_SECRET: ${{ steps.aliyun-credentials.outputs.aliyun-access-key-secret || secrets.ALIYUN_ACCESS_KEY_SECRET }}
+          OSS_SESSION_TOKEN: ${{ steps.aliyun-credentials.outputs.aliyun-security-token || secrets.ALIYUN_SECURITY_TOKEN }}
+          OSS_REGION: ${{ vars.ALIYUN_OSS_REGION }}
+          OSS_ENDPOINT: ${{ vars.ALIYUN_OSS_ENDPOINT }}
+          OSS_BUCKET: ${{ vars.ALIYUN_OSS_BUCKET }}
+          MANUAL_BUCKET_CONFIRM: ${{ inputs.confirm_bucket }}
+          AUTO_BUCKET_CONFIRM: ${{ vars.ALIYUN_DEPLOY_TARGET_CONFIRM }}
+          MANUAL_DELETE_STALE: ${{ inputs.delete_stale_files }}
+          AUTO_DELETE_STALE: ${{ vars.ALIYUN_OSS_DELETE_ENABLED }}
+        run: |
+          set -euo pipefail
+
+          [[ -n "$OSS_ACCESS_KEY_ID" ]] || { echo "缺少阿里云身份凭证。" >&2; exit 78; }
+          [[ -n "$OSS_ACCESS_KEY_SECRET" ]] || { echo "缺少阿里云身份凭证。" >&2; exit 78; }
+          [[ "$OSS_BUCKET" =~ ^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$ ]] || { echo "ALIYUN_OSS_BUCKET 格式无效。" >&2; exit 78; }
+          [[ "$OSS_REGION" =~ ^[a-z0-9-]+$ ]] || { echo "ALIYUN_OSS_REGION 格式无效。" >&2; exit 78; }
+          [[ -n "$OSS_ENDPOINT" ]] || { echo "缺少 ALIYUN_OSS_ENDPOINT。" >&2; exit 78; }
+
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+            target_confirmation="$MANUAL_BUCKET_CONFIRM"
+          else
+            target_confirmation="$AUTO_BUCKET_CONFIRM"
+          fi
+          [[ "$target_confirmation" == "$OSS_BUCKET" ]] || {
+            echo "目标 Bucket 二次确认不匹配，已停止部署。" >&2
+            exit 78
+          }
+
+          if [[ "$OSS_ENDPOINT" != http://* && "$OSS_ENDPOINT" != https://* ]]; then
+            OSS_ENDPOINT="https://$OSS_ENDPOINT"
+            export OSS_ENDPOINT
+          fi
+          [[ "$OSS_ENDPOINT" != *-internal.* ]] || { echo "GitHub 托管运行器不能使用 OSS 内网 Endpoint。" >&2; exit 78; }
+
+          target="oss://${OSS_BUCKET}/"
+          echo "正在把经过校验的静态站点同步到专用 Bucket 根目录：$target"
+
+          asset_stage="$RUNNER_TEMP/jongmusic-assets"
+          mkdir -p "$asset_stage"
+          rsync -a \
+            --exclude='/index.html' \
+            --exclude='/404.html' \
+            --exclude='/index.rsc' \
+            --exclude='/vinext-client-entry-manifest.json' \
+            dist/client/ "$asset_stage/"
+
+          # Keep old hashed files during the normal publish so an already-open page
+          # can continue loading while the new entry document becomes active.
+          ossutil sync "$asset_stage/" "$target" \
+            --force \
+            --cache-control "public,max-age=300,must-revalidate"
+
+          delete_stale=false
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" && "$MANUAL_DELETE_STALE" == "true" ]]; then
+            delete_stale=true
+          elif [[ "$GITHUB_EVENT_NAME" == "push" && "$AUTO_DELETE_STALE" == "true" ]]; then
+            delete_stale=true
+          fi
+
+          if [[ "$delete_stale" == "true" ]]; then
+            echo "已明确启用旧文件清理；正在使 OSS 与本次构建完全一致。"
+            ossutil sync dist/client/ "$target" \
+              --delete \
+              --force \
+              --cache-control "public,max-age=300,must-revalidate"
+          else
+            echo "保留旧的内容哈希文件，避免已打开的旧页面在版本切换时出现 404。"
+          fi
+
+          ossutil cp dist/client/_next/static/ "${target}_next/static/" \
+            --recursive \
+            --force \
+            --cache-control "public,max-age=31536000,immutable"
+
+          for entry in index.html 404.html index.rsc vinext-client-entry-manifest.json; do
+            if [[ -f "dist/client/$entry" ]]; then
+              ossutil cp "dist/client/$entry" "${target}${entry}" \
+                --force \
+                --cache-control "no-cache,no-store,must-revalidate"
+            fi
+          done
+
+      - name: Install Alibaba Cloud CLI for CDN refresh
+        if: ${{ vars.ALIYUN_CDN_DOMAIN != '' }}
+        uses: aliyun/setup-aliyun-cli-action@09a5f86915bb556e27bf050e9a5e339aeb073df5 # v1
+        with:
+          version: 3.5.0
+
+      - name: Refresh CDN entry pages
+        if: ${{ vars.ALIYUN_CDN_DOMAIN != '' }}
+        shell: bash
+        env:
+          ALIBABA_CLOUD_ACCESS_KEY_ID: ${{ steps.aliyun-credentials.outputs.aliyun-access-key-id || secrets.ALIYUN_ACCESS_KEY_ID }}
+          ALIBABA_CLOUD_ACCESS_KEY_SECRET: ${{ steps.aliyun-credentials.outputs.aliyun-access-key-secret || secrets.ALIYUN_ACCESS_KEY_SECRET }}
+          ALIBABA_CLOUD_SECURITY_TOKEN: ${{ steps.aliyun-credentials.outputs.aliyun-security-token || secrets.ALIYUN_SECURITY_TOKEN }}
+          ALIBABA_CLOUD_REGION_ID: ${{ vars.ALIYUN_OSS_REGION }}
+          ALIBABA_CLOUD_IGNORE_PROFILE: "TRUE"
+          ALIBABA_CLOUD_CLI_PLUGIN_AUTO_INSTALL: "true"
+          CDN_DOMAIN: ${{ vars.ALIYUN_CDN_DOMAIN }}
+        run: |
+          set -euo pipefail
+          [[ "$CDN_DOMAIN" =~ ^[A-Za-z0-9.-]+$ ]] || { echo "ALIYUN_CDN_DOMAIN 只填写域名，不要带 https:// 或路径。" >&2; exit 78; }
+          refresh_paths="$(printf 'https://%s/\nhttps://%s/index.html\nhttps://%s/index.rsc\nhttps://%s/404.html' "$CDN_DOMAIN" "$CDN_DOMAIN" "$CDN_DOMAIN" "$CDN_DOMAIN")"
+          aliyun cdn RefreshObjectCaches \
+            --ObjectPath "$refresh_paths" \
+            --ObjectType File
+
+      - name: Refresh fixed-name media after switching versions
+        if: ${{ vars.ALIYUN_CDN_DOMAIN != '' && vars.ALIYUN_CDN_REFRESH_ASSETS == 'true' }}
+        shell: bash
+        env:
+          ALIBABA_CLOUD_ACCESS_KEY_ID: ${{ steps.aliyun-credentials.outputs.aliyun-access-key-id || secrets.ALIYUN_ACCESS_KEY_ID }}
+          ALIBABA_CLOUD_ACCESS_KEY_SECRET: ${{ steps.aliyun-credentials.outputs.aliyun-access-key-secret || secrets.ALIYUN_ACCESS_KEY_SECRET }}
+          ALIBABA_CLOUD_SECURITY_TOKEN: ${{ steps.aliyun-credentials.outputs.aliyun-security-token || secrets.ALIYUN_SECURITY_TOKEN }}
+          ALIBABA_CLOUD_REGION_ID: ${{ vars.ALIYUN_OSS_REGION }}
+          ALIBABA_CLOUD_IGNORE_PROFILE: "TRUE"
+          ALIBABA_CLOUD_CLI_PLUGIN_AUTO_INSTALL: "true"
+          CDN_DOMAIN: ${{ vars.ALIYUN_CDN_DOMAIN }}
+        run: |
+          set -euo pipefail
+          refresh_paths="$(printf 'https://%s/assets/\nhttps://%s/fonts/' "$CDN_DOMAIN" "$CDN_DOMAIN")"
+          aliyun cdn RefreshObjectCaches \
+            --ObjectPath "$refresh_paths" \
+            --ObjectType Directory
