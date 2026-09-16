@@ -65,8 +65,8 @@ const songs = [
 
 const featuredWorks = [
   { index: "01", title: "苦尽甘来", category: "Original Music", note: "播放量10亿+", image: "/assets/work-bitter-sweet.webp", action: "open", detail: "song" as ProjectDetailKind },
-  { index: "02", title: "虚拟偶像翁沁", category: "Virtual Idol", image: "/assets/work-virtual-idol-2026.webp", action: "open", detail: "idol" as ProjectDetailKind },
-  { index: "03", title: "AIMV作品展示 · 两个世界的孤单", category: "AI Music Video", note: "AIMV / 视觉叙事", image: "/assets/aimv-preview-poster.webp", action: "play", detail: "video" as ProjectDetailKind },
+  { index: "02", title: "虚拟艺人翁沁", category: "Virtual Artist", image: "/assets/work-virtual-idol-2026.webp", action: "open", detail: "idol" as ProjectDetailKind },
+  { index: "03", title: "两个世界的孤单", category: "AI Music Video", note: "AIMV / 视觉叙事", image: "/assets/aimv-preview-poster.webp", action: "play", detail: "video" as ProjectDetailKind },
   { index: "04", title: "在现场，与声音相遇", category: "Live Performance", note: "舞台 / 音乐节", image: "/assets/work-live-2025.webp", action: "open", detail: "live" as ProjectDetailKind },
 ];
 
@@ -293,9 +293,9 @@ export default function Home() {
             </div>
 
             <div className="hero-summary">
-              <p>音乐制作人 / 音乐唱作人</p>
-              <p>歌手 / AIMV 导演 / 虚拟偶像制作</p>
-              <p>让声音，成为看得见的情绪。</p>
+              <p>音乐制作人 / 唱作人</p>
+              <p>AIMV 导演 / 虚拟艺人制作人</p>
+              <p>我把情绪写进声音，也把它带进世界。</p>
             </div>
 
             <a className="hero-works-cta" href="#works">
@@ -306,7 +306,7 @@ export default function Home() {
 
           <div className="hero-releases">
             <div className="hero-releases-heading">
-              <strong>最近新歌</strong>
+              <strong>最新发行</strong>
               <span>LATEST RELEASES / 05</span>
             </div>
 
@@ -333,7 +333,7 @@ export default function Home() {
       <section className="about editorial-section" id="about">
         <EditorialBackground />
         <div className="section-shell shell">
-          <div className="section-ref" data-reveal><span>01 / ABOUT</span><span>关于我</span></div>
+          <div className="section-ref" data-reveal><span>01 / ABOUT</span></div>
           <AnimatedSectionTitle title="ABOUT" />
 
           <div className="about-layout">
@@ -360,8 +360,8 @@ export default function Home() {
 
             <div className="about-copy" data-reveal>
               <p className="section-eyebrow">MORE THAN ONE EXPRESSION</p>
-              <h3>在声音之中<br />也在画面之外</h3>
-              <p className="about-lead">我是翁梓铭 JONG，<br />一个用音乐和影像表达的创作者。</p>
+              <h3>从音乐开始<br />不止于音乐</h3>
+              <p className="about-lead">我是翁梓铭 JONG，<br />载体会变 情绪不会</p>
               <p>毕业于星海音乐学院，从词曲创作、编曲到管弦乐配器，以唯美、细腻、大气的声音语言，连接作品与听众。擅长风格多元化，流行、电子、爵士、Hiphop、R&amp;B、纯音乐......</p>
               <p>曾合作李宇春、古巨基、EXO、尚雯婕、杨宗纬、陶喆、鹿晗、黄龄等艺人；参与《乘风破浪的姐姐》《中国好歌曲》《中国好声音》《我是歌手》等音乐节目的音乐制作。</p>
 
@@ -413,9 +413,9 @@ export default function Home() {
       <section className="works editorial-section" id="works">
         <EditorialBackground />
         <div className="section-shell shell">
-          <div className="section-ref" data-reveal><span>02 / SELECTED WORK</span><span>精选项目</span></div>
+          <div className="section-ref" data-reveal><span>02 / SELECTED WORK</span></div>
           <AnimatedSectionTitle title="SELECTED WORK" />
-          <div className="works-intro" data-reveal><h3>让作品<br />自己说话</h3><p>一些旋律，一些片段。<br />关于我，也关于你。</p></div>
+          <div className="works-intro" data-reveal><h3>想留下来的<br />作品</h3><p>音乐 影像 现场<br />以及一些新的尝试</p></div>
 
           <div className="project-grid">
             {featuredWorks.map((project, index) => (
@@ -457,9 +457,9 @@ export default function Home() {
       <section className="capabilities editorial-section" id="capabilities">
         <EditorialBackground />
         <div className="section-shell shell">
-          <div className="section-ref" data-reveal><span>03 / CREATIVE PRACTICE</span><span>个人优势</span></div>
+          <div className="section-ref" data-reveal><span>03 / CREATIVE PRACTICE</span></div>
           <AnimatedSectionTitle title="CREATIVE PRACTICE" />
-          <div className="capability-intro" data-reveal><h3>不同的媒介<br />同一种表达欲</h3><p>从一段旋律到一个完整世界，<br />让每一个创作环节彼此呼应。</p></div>
+          <div className="capability-intro" data-reveal><h3>音乐是起点<br />媒介没有边界</h3></div>
 
           <div className="strength-grid">
             {strengths.map((item) => (
@@ -478,14 +478,14 @@ export default function Home() {
       <footer className="contact editorial-section" id="contact">
         <EditorialBackground />
         <div className="contact-content shell">
-          <div className="section-ref" data-reveal><span>04 / GET IN TOUCH</span><span>下一次创作，从这里开始</span></div>
+          <div className="section-ref" data-reveal><span>04 / GET IN TOUCH</span></div>
           <AnimatedSectionTitle title="GET IN TOUCH" />
           <p className="contact-kicker" data-reveal>HAVE SOMETHING IN MIND?</p>
           <div className="contact-statement" data-reveal>
-            <h3>一起把灵感<br />变成作品</h3>
+            <h3>你有想法，<br />我来帮你实现。</h3>
           </div>
           <div className="contact-bottom" data-reveal>
-            <p>音乐制作 / 原创歌曲 / 演出邀约 / AIMV 创作 / 虚拟偶像制作</p>
+            <p>音乐制作人 / 唱作人 / AIMV 导演 / 虚拟艺人制作人</p>
             <div><span>商务邮箱</span><span className="contact-email"><Mail size={16} />489431528@qq.com</span></div>
           </div>
           <div className="footer-line"><BrandMark /><span>© {new Date().getFullYear()} JONG. ALL RIGHTS RESERVED.</span><a href="#top">回到顶部 <ArrowUp size={13} aria-hidden="true" /></a></div>

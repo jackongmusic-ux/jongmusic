@@ -20,7 +20,7 @@ type ProjectDetailDialogProps = {
 
 const detailTitles: Record<ProjectDetailKind, string> = {
   song: "苦尽甘来",
-  idol: "虚拟偶像翁沁",
+  idol: "虚拟艺人翁沁",
   video: "两个世界的孤单",
   live: "在现场，与声音相遇",
 };
@@ -88,11 +88,11 @@ function IdolDetail({ onOpenImage }: { onOpenImage: (index: number) => void }) {
   return (
     <div className="detail-layout detail-layout--idol">
       <figure className="detail-visual detail-visual--portrait">
-        <img src="/assets/work-virtual-idol-2026.webp" alt="虚拟偶像翁沁造型肖像" decoding="async" />
+        <img src="/assets/work-virtual-idol-2026.webp" alt="虚拟艺人翁沁造型肖像" decoding="async" />
       </figure>
       <div className="detail-copy">
-        <p className="detail-eyebrow">VIRTUAL IDOL</p>
-        <h2>虚拟偶像翁沁</h2>
+        <p className="detail-eyebrow">Virtual Artist</p>
+        <h2>虚拟艺人翁沁</h2>
         <dl className="detail-facts">
           <div><dt>姓名</dt><dd>翁沁</dd></div>
           <div><dt>身高</dt><dd>165 cm</dd></div>
