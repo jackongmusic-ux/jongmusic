@@ -2,6 +2,22 @@
 @import "tw-animate-css";
 @import "../vendor/shadcn-tailwind-4.13.0.css";
 
+@font-face {
+  font-family: "Jong Display";
+  src: url("/fonts/anton-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Jong Sans";
+  src: url("/fonts/jong-sans.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
 :root {
   --ink: #050505;
   --paper: #eeece6;
@@ -9,7 +25,7 @@
   --line: rgba(238, 236, 230, 0.18);
   --accent: #ee4934;
   --shell: min(1700px, calc(100vw - 72px));
-  --editorial-cn-font: "Yuanti SC", "STYuanti", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --editorial-cn-font: "Jong Sans", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -18,7 +34,7 @@ body {
   margin: 0;
   background: var(--ink);
   color: var(--paper);
-  font-family: "Helvetica Neue", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+  font-family: "Jong Sans", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
@@ -220,9 +236,9 @@ img, video { display: block; max-width: 100%; }
 .hero-name-lockup h1 {
   display: flex;
   margin: 0;
-  font-family: Impact, "Arial Narrow", "Helvetica Neue", sans-serif;
+  font-family: "Jong Display", Impact, "Arial Narrow", sans-serif;
   font-size: var(--hero-name-size);
-  font-weight: 800;
+  font-weight: 400;
   line-height: .82;
   letter-spacing: -.045em;
 }
@@ -446,9 +462,9 @@ img, video { display: block; max-width: 100%; }
 .section-title {
   --section-title-size: clamp(5rem, 8.3vw, 9.4rem);
   margin: clamp(58px, 5vw, 90px) 0 0;
-  font-family: "Arial Narrow", "Helvetica Neue", sans-serif;
+  font-family: "Jong Display", "Arial Narrow", sans-serif;
   font-size: var(--section-title-size);
-  font-weight: 680;
+  font-weight: 400;
   line-height: .82;
   letter-spacing: -.075em;
 }
@@ -559,7 +575,7 @@ img, video { display: block; max-width: 100%; }
 .detail-layout--idol .detail-visual img { object-position: 52% 28%; }
 .detail-copy { min-width: 0; }
 .detail-eyebrow { margin: 0 0 34px; color: #f1f4f8; font-size: .72rem; font-weight: 620; letter-spacing: .15em; text-transform: uppercase; }
-.detail-copy h2, .video-detail-copy h2 { margin: 0; font-family: "Songti SC", "STSong", serif; font-size: clamp(2.2rem, 3.4vw, 3.7rem); font-weight: 400; line-height: 1.22; letter-spacing: -.025em; }
+.detail-copy h2, .video-detail-copy h2 { margin: 0; font-family: "Jong Sans", "PingFang SC", "Noto Sans SC", sans-serif; font-size: clamp(2.2rem, 3.4vw, 3.7rem); font-weight: 500; line-height: 1.22; letter-spacing: -.025em; }
 .detail-description { margin: 28px 0 22px; color: rgba(232, 238, 247, .64); font-size: .94rem; line-height: 1.75; }
 .detail-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 0 34px; margin: 0; }
 .detail-facts > div { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 22px; border-bottom: 1px solid rgba(225, 233, 244, .22); }
@@ -589,9 +605,9 @@ img, video { display: block; max-width: 100%; }
 
 .project-modal--live { width: min(940px, calc(100vw - 72px)); max-width: min(940px, calc(100vw - 72px)); padding: 36px 40px 40px; }
 .live-detail .detail-eyebrow { margin-bottom: 22px; }
-.live-detail h2 { margin: 0; font-family: "Songti SC", "STSong", serif; font-size: clamp(2.4rem, 3.5vw, 3.6rem); font-weight: 400; line-height: 1.2; letter-spacing: -.025em; }
+.live-detail h2 { margin: 0; font-family: "Jong Sans", "PingFang SC", "Noto Sans SC", sans-serif; font-size: clamp(2.4rem, 3.5vw, 3.6rem); font-weight: 500; line-height: 1.2; letter-spacing: -.025em; }
 .live-detail .detail-description { max-width: 920px; margin: 22px 0 30px; }
-.live-gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.live-gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: clamp(28px, 3.5vw, 44px); }
 .live-gallery button { position: relative; overflow: hidden; aspect-ratio: 1.4; padding: 0; border: 1px solid rgba(102, 132, 190, .3); background: #0a111b; cursor: zoom-in; }
 .live-gallery button:focus-visible { outline: 2px solid rgba(232, 238, 247, .9); outline-offset: 3px; }
 .live-gallery img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s cubic-bezier(.2, .8, .2, 1), filter .5s ease; }
@@ -810,7 +826,7 @@ img, video { display: block; max-width: 100%; }
   .video-detail video { max-height: none; }
   .live-detail h2 { font-size: 2.35rem; }
   .live-detail .detail-description { margin: 18px 0 24px; font-size: .88rem; }
-  .live-gallery { grid-template-columns: 1fr 1fr; gap: 9px; }
+  .live-gallery { grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 28px; }
   .live-gallery span { bottom: 6px; left: 6px; }
   .live-lightbox { width: calc(100vw - 16px); max-width: calc(100vw - 16px); max-height: calc(100svh - 16px); padding: 56px 10px 24px; }
   .live-lightbox figure img { max-height: calc(100svh - 112px); }

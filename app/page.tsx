@@ -85,8 +85,8 @@ function AnimatedSectionTitle({ title, mobileLines }: { title: string; mobileLin
       key={key ?? line}
       className="section-title-fuzzy"
       fontSize="var(--section-title-size)"
-      fontWeight={700}
-      fontFamily={'"Arial Narrow", "Helvetica Neue", Arial, sans-serif'}
+      fontWeight={400}
+      fontFamily={'"Jong Display", "Arial Narrow", sans-serif'}
       color="#dce6f4"
       baseIntensity={0.06}
       hoverIntensity={0.25}
@@ -268,8 +268,8 @@ export default function Home() {
                 <FuzzyText
                   className="hero-fuzzy-name"
                   fontSize="var(--hero-name-size)"
-                  fontWeight={800}
-                  fontFamily={'Impact, "Arial Narrow", "Helvetica Neue", sans-serif'}
+                  fontWeight={400}
+                  fontFamily={'"Jong Display", Impact, "Arial Narrow", sans-serif'}
                   color="#f0f3f7"
                   baseIntensity={0.08}
                   hoverIntensity={0.28}

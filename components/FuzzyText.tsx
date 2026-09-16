@@ -57,9 +57,11 @@ export default function FuzzyText({
     let clickTimeoutId = 0;
     let resizeTimeoutId = 0;
     let cancelled = false;
+    let initialiseVersion = 0;
     let dispose = () => {};
 
     const initialise = async () => {
+      const version = ++initialiseVersion;
       dispose();
       const context = canvas.getContext("2d");
       if (!context) return;
@@ -75,10 +77,18 @@ export default function FuzzyText({
       const numericFontSize = Number.parseFloat(window.getComputedStyle(measuringNode).fontSize) || 128;
       measuringNode.remove();
       const fontString = `${fontWeight} ${numericFontSize}px ${computedFontFamily}`;
-
-      if (cancelled) return;
-
       const text = React.Children.toArray(children).join("");
+
+      if (document.fonts) {
+        try {
+          await document.fonts.load(fontString, text);
+        } catch {
+          // Keep the fallback stack available if a font request is interrupted.
+        }
+      }
+
+      if (cancelled || version !== initialiseVersion) return;
+
       const offscreen = document.createElement("canvas");
       const offscreenContext = offscreen.getContext("2d");
       if (!offscreenContext) return;
@@ -267,6 +277,7 @@ export default function FuzzyText({
     void initialise();
     return () => {
       cancelled = true;
+      initialiseVersion += 1;
       window.removeEventListener("resize", onResize);
       window.clearTimeout(resizeTimeoutId);
       dispose();

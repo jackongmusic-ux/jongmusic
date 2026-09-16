@@ -27,6 +27,20 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <head>
+        <link
+          rel="preload"
+          href="/fonts/anton-latin.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/jong-sans.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: "history.scrollRestoration='manual';if(location.hash){history.replaceState(null,'',location.pathname+location.search)}scrollTo(0,0);if(!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.classList.add('motion-boot');setTimeout(()=>document.documentElement.classList.remove('motion-boot'),8000)}",

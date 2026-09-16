@@ -21,7 +21,7 @@ type ProjectDetailDialogProps = {
 const detailTitles: Record<ProjectDetailKind, string> = {
   song: "苦尽甘来",
   idol: "虚拟偶像翁沁",
-  video: "AIMV作品展示：两个世界的孤单",
+  video: "两个世界的孤单",
   live: "在现场，与声音相遇",
 };
 
@@ -135,7 +135,7 @@ function VideoDetail({ onPlay }: { onPlay?: () => void }) {
       </video>
       <div className="video-detail-copy">
         <p className="detail-eyebrow">AI MUSIC VIDEO</p>
-        <h2>AIMV作品展示：两个世界的孤单</h2>
+        <h2>两个世界的孤单</h2>
         <DetailActions />
       </div>
     </div>
