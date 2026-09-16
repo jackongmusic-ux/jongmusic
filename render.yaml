@@ -1,9 +1,7 @@
 services:
   - type: web
     name: jongmusic
-    runtime: node
-    plan: free
+    runtime: static
     buildCommand: pnpm install --frozen-lockfile && pnpm build
-    startCommand: node dist/standalone/server.js
-    healthCheckPath: /
+    staticPublishPath: ./dist/client
     autoDeployTrigger: commit

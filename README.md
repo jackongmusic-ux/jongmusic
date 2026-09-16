@@ -17,10 +17,9 @@ pnpm dev
 
 ```bash
 pnpm build
-pnpm start
 ```
 
-生产服务器会自动读取 `PORT` 环境变量，并监听 `0.0.0.0`，可直接用于 Render Web Service。
+静态站点会生成在 `dist/client`，其中包含可直接托管的 `index.html`。
 
 ## 上传 GitHub
 
@@ -28,14 +27,13 @@ pnpm start
 
 ## Render 部署
 
-仓库根目录包含 `render.yaml`。在 Render 中选择 **New → Blueprint**，连接 `jongmusic` GitHub 仓库并部署即可。
+仓库根目录包含 `render.yaml`。在 Render 中选择 **New → Blueprint** 连接仓库，或手动创建 **Static Site**。
 
 默认配置：
 
 - 服务名称：`jongmusic`
-- 类型：Node Web Service
+- 类型：Static Site
 - 构建命令：`pnpm install --frozen-lockfile && pnpm build`
-- 启动命令：`node dist/standalone/server.js`
-- 健康检查：`/`
+- 发布目录：`dist/client`
 
 Render 的默认网址由服务名称决定。如果 `jongmusic` 尚未被占用，网址通常为 `https://jongmusic.onrender.com`；若名称已被占用，Render 会要求使用其他唯一名称。
