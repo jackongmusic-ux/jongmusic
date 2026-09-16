@@ -1,0 +1,58 @@
+.ghost-fibers-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.ghost-fibers-container canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.ghost-fibers-container[data-fallback="true"] {
+  background: #070c16;
+}
+
+.ghost-fibers-container[data-fallback="true"]::before,
+.ghost-fibers-container[data-fallback="true"]::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.ghost-fibers-container[data-fallback="true"]::before {
+  inset: -45%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 600'%3E%3Cdefs%3E%3Cfilter id='g' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeGaussianBlur stdDeviation='4' result='b'/%3E%3CfeMerge%3E%3CfeMergeNode in='b'/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3C/feMerge%3E%3C/filter%3E%3C/defs%3E%3Cg fill='none' stroke='%230e76ad' stroke-opacity='.58' filter='url(%23g)'%3E%3Cpath d='M-100 95 C130 -35 285 205 505 82 S820 180 1010 22'/%3E%3Cpath d='M-90 143 C155 14 310 244 538 126 S835 216 1000 70' stroke-width='1.4'/%3E%3Cpath d='M-110 204 C120 62 300 302 520 180 S830 274 1015 118' stroke-width='2.2'/%3E%3Cpath d='M-70 267 C165 126 330 360 550 244 S840 326 990 182'/%3E%3Cpath d='M-120 332 C90 183 286 426 512 302 S810 394 1020 236' stroke-width='1.8'/%3E%3Cpath d='M-70 410 C170 252 340 482 565 368 S850 454 1000 312'/%3E%3Cpath d='M-100 492 C128 336 310 548 535 438 S820 526 1010 376' stroke-width='2.4'/%3E%3C/g%3E%3C/svg%3E");
+  background-position: center;
+  background-size: 900px 600px;
+  filter: blur(.5px);
+  opacity: .7;
+  mix-blend-mode: screen;
+  transform: rotate(-61deg) scale(1.25);
+  animation: ghost-fallback-flow 15s linear infinite;
+}
+
+.ghost-fibers-container[data-fallback="true"]::after {
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 22% 26%, rgba(2, 87, 130, .25), transparent 48%),
+    radial-gradient(ellipse at 78% 74%, rgba(1, 70, 125, .19), transparent 50%);
+  opacity: .82;
+  animation: ghost-fallback-breathe 7s ease-in-out infinite alternate;
+}
+
+@keyframes ghost-fallback-flow {
+  from { transform: rotate(-61deg) scale(1.25) translate3d(-3%, 0, 0); }
+  to { transform: rotate(-61deg) scale(1.25) translate3d(3%, 0, 0); }
+}
+
+@keyframes ghost-fallback-breathe {
+  from { opacity: .56; transform: scale(1); }
+  to { opacity: .9; transform: scale(1.05); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ghost-fibers-container[data-fallback="true"]::before,
+  .ghost-fibers-container[data-fallback="true"]::after { animation: none; }
+}

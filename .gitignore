@@ -1,0 +1,41 @@
+# Dependencies
+/node_modules/
+/.pnpm-store/
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# Build and framework output
+/dist/
+/.next/
+/.vinext/
+/out/
+/.wrangler/
+
+# Local QA, generated files, and tool state
+/coverage/
+/outputs/
+/work/
+/.sites-runtime/
+/.agents/
+/.codex/
+*.tsbuildinfo
+next-env.d.ts
+
+# Local environment and operating-system files
+.DS_Store
+.env*
+*.pem
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Other hosting state
+.vercel/
